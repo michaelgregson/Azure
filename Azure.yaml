@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: azureusergroup
+    component: frontend
+  name: frontend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: azureusergroup
+    component: frontend
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  paused: false
+  template:
+    metadata:
+      labels:
+        app: azureusergroup
+        component: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: <acrLoginServer>.azurecr.io/azure:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: http
+---
+

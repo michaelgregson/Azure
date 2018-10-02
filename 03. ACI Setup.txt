@@ -1,0 +1,5 @@
+//GET ACR ADMIN PASSWORD
+az acr credential show --name <acrName> --query "passwords[0].value"
+
+//CREATE CONTAINER INSTANCE - NAME & DNS LABEL MSUT BE LOWERCASE
+az container create --resource-group <rgName> --name <aciName> --image <acrLoginServer>.azurecr.io/azure:v2 --cpu 1 --memory 1 --registry-login-server <acrLoginServer>.azurecr.io --registry-username <acrLoginServer> --registry-password <password> --dns-name-label <dnsName> --ports 80

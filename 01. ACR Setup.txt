@@ -1,0 +1,23 @@
+///CREATE RESOURCE GROUP
+az group create --name <rgName> --location eastus
+
+///CREATE AZURE CONTAINER REGISTRY
+az acr create --resource-group <rgName> --name <acrName> --sku Basic
+
+///LOGIN TO REGISTRY
+az acr login --name <acrName>
+
+///DETERMINE LOGIN SERVER NAME
+az acr list --resource-group <rgName> --query "[].{acrLoginServer:loginServer}" --output table
+
+///GET CONTAINER IMAGE
+docker pull michaelgregson/azure
+
+///TAG CONTAINER IMAGE
+docker tag michaelgregson/azure <acrLoginServer>/azure:v1
+
+///PUSH CONTAINER IMAGE
+docker push <acrLoginServer>/azure:v1
+
+///ENABLE ADMIN USER
+az acr update -n <acrName> --admin-enabled true

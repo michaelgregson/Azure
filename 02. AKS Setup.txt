@@ -1,0 +1,35 @@
+///CREATE A SERVICE PRINCIPAL - SAVE THE RESULT
+az ad sp create-for-rbac --skip-assignment
+
+///GET THE CONTAINER REGISTRY ID - SAVE THE RESULT
+az acr show --resource-group <rgName> --name <acrName> --query "id" --output tsv
+
+///ALLOW SERVICE PRINCIPAL TO READ FROM ACR
+az role assignment create --assignee <appId> --scope <acrId> --role Reader
+
+///CREATE AKS CLUSTER USING SERVICE PRINCIPAL
+az aks create --resource-group <rgName> --name <aksName> --node-count 1 --service-principal <appId> --client-secret <password> --generate-ssh-keys
+
+//INSTAL CLI TOOLING (LOCAL ONLY)
+az aks install-cli
+
+//LOG INTO AKS CLUSTER
+az aks get-credentials --resource-group <rgName> --name <aksName>
+
+///DETERMINE ACR LOGIN SERVER NAME
+az acr list --resource-group <rgName> --query "[].{acrLoginServer:loginServer}" --output table
+
+//UPDATE YAML FILE
+
+//DEPLOY SERVICE AND APPLICATION
+kubectl apply -f Azure.yaml
+
+//AWAIT EXTERNAL IP ASSIGNMENT
+kubectl get service frontend --watch
+
+//CHECK FOR UPDATES
+az aks get-upgrades --resource-group <rgName> --name <aksName> --output table
+
+//UPDATE CLUSTER VERSION - DO NOT RUN
+az aks upgrade --resource-group <rgName> --name <aksName> --kubernetes-version 1.10.7
+az aks upgrade --resource-group <rgName> --name <aksName> --kubernetes-version 1.11.3
